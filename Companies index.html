@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tanzania Trade Exporters Registry</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* --- Russia Section (Gold/Navy) --- */
+      --navy: #0B1F3A;
+      --gold: #C9A84C;
+      --gold-light: #E2C97E;
+      --ivory: #FDFAF4;
+      --mist: rgba(255,255,255,0.06);
+      --border: rgba(201,168,76,0.18);
+      --text-dim: rgba(253,250,244,0.55);
+
+      /* --- Other Markets Section (Forest Green / Oceanic Blue) --- */
+      --ocean: #04263F;
+      --ocean-mid: #063A58;
+      --forest: #1A4D2E;
+      --forest-light: #2A7A49;
+      --teal: #0D9488;
+      --teal-light: #5EEAD4;
+      --sea-border: rgba(13,148,136,0.22);
+      --sea-mist: rgba(13,148,136,0.06);
+      --sea-dim: rgba(200,240,235,0.5);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--navy);
+      color: var(--ivory);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ---- BACKGROUNDS ---- */
+    .bg-scene {
+      position: fixed; inset: 0; z-index: 0; overflow: hidden;
+    }
+    .bg-scene::before {
+      content: '';
+      position: absolute;
+      width: 700px; height: 700px;
+      top: -200px; left: -200px;
+      background: radial-gradient(circle, rgba(28,58,92,0.9) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .bg-scene::after {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      bottom: -100px; right: -100px;
+      background: radial-gradient(circle, rgba(26,77,46,0.35) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .bg-grain {
+      position: fixed; inset: 0; z-index: 1; opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+    .bg-line {
+      position: fixed; top: 0; bottom: 0; width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--gold) 40%, var(--gold) 60%, transparent);
+      opacity: 0.06; z-index: 1;
+    }
+    .bg-line:nth-child(1) { left: 18%; }
+    .bg-line:nth-child(2) { left: 50%; }
+    .bg-line:nth-child(3) { right: 18%; }
+
+    main {
+      position: relative; z-index: 10;
+      max-width: 720px; margin: 0 auto;
+      padding: 40px 20px 60px;
+    }
+
+    /* ---- SECTION DIVIDER ---- */
+    .section-divider {
+      margin: 48px 0 40px;
+      position: relative;
+      text-align: center;
+    }
+    .section-divider::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--teal) 30%, var(--teal) 70%, transparent);
+      opacity: 0.2;
+      transform: translateY(-50%);
+    }
+    .section-divider-inner {
+      position: relative; display: inline-block;
+      background: var(--navy); padding: 0 20px;
+    }
+    .section-divider-text {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(94,234,212,0.35);
+    }
+
+    /* ---- SHARED HEADER ---- */
+    .header {
+      text-align: center;
+      margin-bottom: 36px;
+      animation: fadeUp 0.7s ease both;
+    }
+    .header-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 5px 14px 5px 10px;
+      border-radius: 20px;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    .header-badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      animation: pulse 2s ease infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    /* Russia badge */
+    .badge-russia {
+      background: rgba(201,168,76,0.1);
+      border: 1px solid rgba(201,168,76,0.25);
+      color: var(--gold-light);
+    }
+    .badge-russia .dot { background: var(--gold); box-shadow: 0 0 6px var(--gold); }
+
+    /* Markets badge */
+    .badge-markets {
+      background: rgba(13,148,136,0.1);
+      border: 1px solid rgba(13,148,136,0.3);
+      color: var(--teal-light);
+    }
+    .badge-markets .dot { background: var(--teal-light); box-shadow: 0 0 6px var(--teal); }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 5vw, 40px);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      color: var(--ivory);
+    }
+    h1 .accent-gold { color: var(--gold-light); }
+    h1 .accent-teal { color: var(--teal-light); }
+
+    .header-sub {
+      margin-top: 10px;
+      font-size: 13px; font-weight: 300;
+      color: var(--text-dim);
+      letter-spacing: 0.03em;
+    }
+    .header-rule {
+      display: flex; align-items: center; gap: 12px;
+      margin: 22px auto 0; max-width: 280px;
+    }
+    .header-rule svg { opacity: 0.5; flex-shrink:0; }
+    .rule-gold span { flex:1; height:1px; background: linear-gradient(to right, transparent, var(--gold), transparent); opacity:0.3; }
+    .rule-gold svg { color: var(--gold); }
+    .rule-teal span { flex:1; height:1px; background: linear-gradient(to right, transparent, var(--teal), transparent); opacity:0.3; }
+    .rule-teal svg { color: var(--teal-light); }
+
+    /* ---- MARKETS INTRO PANEL ---- */
+    .markets-intro {
+      background: linear-gradient(135deg, rgba(4,38,63,0.8) 0%, rgba(26,77,46,0.4) 100%);
+      border: 1px solid var(--sea-border);
+      border-radius: 16px;
+      padding: 22px 24px;
+      margin-bottom: 24px;
+      display: flex; align-items: flex-start; gap: 16px;
+      animation: fadeUp 0.7s ease both;
+    }
+    .markets-intro-icon {
+      width: 42px; height: 42px; border-radius: 10px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--ocean-mid), var(--forest));
+      border: 1px solid rgba(13,148,136,0.25);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .markets-intro-icon svg { color: var(--teal-light); width: 20px; height: 20px; }
+    .markets-intro-body h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px; font-weight: 700;
+      color: var(--ivory); line-height: 1.3;
+      margin-bottom: 6px;
+    }
+    .markets-intro-body p {
+      font-size: 12.5px; font-weight: 300;
+      color: var(--sea-dim);
+      line-height: 1.6;
+    }
+    .markets-intro-body p strong { color: var(--teal-light); font-weight: 600; }
+
+    /* ---- STATS ROW ---- */
+    .stats-row {
+      display: flex; gap: 10px; margin-bottom: 16px;
+      animation: fadeUp 0.7s 0.1s ease both;
+    }
+    .stat-chip {
+      flex: 1; text-align: center;
+      background: var(--mist);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 8px;
+      transition: all 0.2s;
+    }
+    .stat-chip:hover { background: rgba(201,168,76,0.06); }
+    .stat-chip.teal-chip { background: var(--sea-mist); border-color: var(--sea-border); }
+    .stat-chip.teal-chip:hover { background: rgba(13,148,136,0.1); }
+
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px; font-weight: 700;
+      color: var(--gold-light); line-height: 1;
+    }
+    .stat-num.teal { color: var(--teal-light); }
+    .stat-label {
+      font-size: 10px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    /* ---- SEARCH ---- */
+    .search-wrap {
+      position: relative; margin-bottom: 16px;
+      animation: fadeUp 0.7s 0.15s ease both;
+    }
+    .search-wrap svg.icon {
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      width: 18px; height: 18px;
+      pointer-events: none;
+    }
+    .icon-gold { color: rgba(201,168,76,0.5); }
+    .icon-teal { color: rgba(13,148,136,0.5); }
+
+    .search-clear {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      border-radius: 6px;
+      width: 26px; height: 26px; display: none;
+      align-items: center; justify-content: center; cursor: pointer;
+      font-size: 14px; transition: all 0.2s;
+    }
+    .search-clear.visible { display: flex; }
+    .clear-gold { background: rgba(201,168,76,0.12); border: 1px solid rgba(201,168,76,0.2); color: var(--gold-light); }
+    .clear-gold:hover { background: rgba(201,168,76,0.25); }
+    .clear-teal { background: rgba(13,148,136,0.12); border: 1px solid rgba(13,148,136,0.2); color: var(--teal-light); }
+    .clear-teal:hover { background: rgba(13,148,136,0.25); }
+
+    input[type="text"] {
+      width: 100%; padding: 15px 46px 15px 46px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 14px;
+      color: var(--ivory);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 400;
+      transition: all 0.25s;
+      backdrop-filter: blur(12px);
+    }
+    input[type="text"]::placeholder { color: rgba(253,250,244,0.28); }
+
+    .input-gold { border: 1px solid var(--border); }
+    .input-gold:focus { outline:none; border-color: rgba(201,168,76,0.45); background: rgba(255,255,255,0.07); box-shadow: 0 0 0 3px rgba(201,168,76,0.08), inset 0 1px 0 rgba(255,255,255,0.05); }
+    .input-teal { border: 1px solid var(--sea-border); }
+    .input-teal:focus { outline:none; border-color: rgba(13,148,136,0.45); background: rgba(255,255,255,0.07); box-shadow: 0 0 0 3px rgba(13,148,136,0.08), inset 0 1px 0 rgba(255,255,255,0.05); }
+
+    /* ---- TOGGLE BUTTONS ---- */
+    .toggle-btn {
+      width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px;
+      border: none; border-radius: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 700;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.25s;
+      animation: fadeUp 0.7s 0.2s ease both;
+    }
+    .toggle-btn:active { transform: translateY(0) !important; }
+    .toggle-btn .chevron {
+      width: 20px; height: 20px;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
+    }
+    .toggle-btn.open .chevron { transform: rotate(180deg); }
+
+    .btn-russia {
+      background: linear-gradient(135deg, var(--gold) 0%, #A8862A 100%);
+      color: var(--navy);
+      box-shadow: 0 6px 24px rgba(201,168,76,0.25), 0 2px 6px rgba(0,0,0,0.3);
+    }
+    .btn-russia:hover { transform: translateY(-1px); box-shadow: 0 10px 30px rgba(201,168,76,0.35), 0 2px 8px rgba(0,0,0,0.3); }
+
+    .btn-markets {
+      background: linear-gradient(135deg, #0D9488 0%, #065F46 100%);
+      color: #E0FFF8;
+      box-shadow: 0 6px 24px rgba(13,148,136,0.25), 0 2px 6px rgba(0,0,0,0.35);
+    }
+    .btn-markets:hover { transform: translateY(-1px); box-shadow: 0 10px 30px rgba(13,148,136,0.35), 0 2px 8px rgba(0,0,0,0.35); }
+
+    /* ---- LIST CONTAINER ---- */
+    .list-container { margin-top: 14px; display: none; animation: fadeUp 0.4s ease both; }
+    .list-container.open { display: block; }
+
+    /* ---- FILTER TABS ---- */
+    .filter-tabs { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 2px; }
+    .filter-tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      background: var(--mist);
+      cursor: pointer; white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .tab-gold { border: 1px solid var(--border); color: var(--text-dim); }
+    .tab-gold:hover { color: var(--gold-light); border-color: rgba(201,168,76,0.35); }
+    .tab-gold.active { background: rgba(201,168,76,0.12); border-color: rgba(201,168,76,0.4); color: var(--gold-light); }
+    .tab-teal { border: 1px solid var(--sea-border); color: var(--sea-dim); }
+    .tab-teal:hover { color: var(--teal-light); border-color: rgba(13,148,136,0.4); }
+    .tab-teal.active { background: rgba(13,148,136,0.12); border-color: rgba(13,148,136,0.45); color: var(--teal-light); }
+
+    /* ---- COMPANY CARDS ---- */
+    .companies-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .company-card {
+      border-radius: 14px;
+      padding: 16px 18px;
+      display: flex; align-items: flex-start; gap: 14px;
+      transition: all 0.25s;
+      animation: fadeUp 0.4s ease both;
+    }
+    .card-russia { background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.07); }
+    .card-russia:hover { background: rgba(255,255,255,0.06); border-color: rgba(201,168,76,0.2); transform: translateX(2px); }
+    .card-markets { background: rgba(4,38,63,0.5); border: 1px solid rgba(13,148,136,0.1); }
+    .card-markets:hover { background: rgba(4,38,63,0.75); border-color: rgba(13,148,136,0.25); transform: translateX(2px); }
+
+    .card-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 13px; font-weight: 700;
+      opacity: 0.7;
+      min-width: 26px; text-align: right;
+      line-height: 1.6; flex-shrink: 0;
+    }
+    .num-gold { color: var(--gold); }
+    .num-teal { color: var(--teal-light); }
+
+    .card-divider { width: 1px; align-self: stretch; flex-shrink: 0; min-height: 20px; }
+    .divider-gold { background: var(--border); }
+    .divider-teal { background: rgba(13,148,136,0.2); }
+
+    .card-body { flex: 1; min-width: 0; }
+    .card-name { font-size: 14px; font-weight: 600; color: var(--ivory); line-height: 1.4; margin-bottom: 5px; }
+    .card-products { font-size: 12px; font-weight: 300; color: rgba(253,250,244,0.55); line-height: 1.5; margin-bottom: 10px; }
+    .card-products strong { font-weight: 500; color: rgba(253,250,244,0.75); }
+    .card-markets-row { font-size: 11.5px; font-weight: 400; color: rgba(94,234,212,0.65); line-height: 1.5; margin-bottom: 8px; }
+    .card-markets-row strong { font-weight: 600; color: var(--teal-light); }
+    .card-contact { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    /* ---- CONTACT BUTTONS ---- */
+    .contact-action {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 11px; border-radius: 20px;
+      font-size: 11.5px; font-weight: 500;
+      text-decoration: none; transition: all 0.2s;
+      white-space: nowrap; cursor: pointer; border: none;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .contact-action svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+    .btn-call { background: rgba(61,107,90,0.2); border: 1px solid rgba(61,107,90,0.35); color: #7EC9A8; }
+    .btn-call:hover { background: rgba(61,107,90,0.35); border-color: rgba(61,107,90,0.6); transform: translateY(-1px); }
+    .btn-save { background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.25); color: var(--gold-light); }
+    .btn-save:hover { background: rgba(201,168,76,0.2); border-color: rgba(201,168,76,0.45); transform: translateY(-1px); }
+    .btn-email { background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.25); color: #93C5FD; }
+    .btn-email:hover { background: rgba(59,130,246,0.22); border-color: rgba(59,130,246,0.4); transform: translateY(-1px); }
+
+    /* Markets-themed call/save */
+    .btn-call-teal { background: rgba(13,148,136,0.15); border: 1px solid rgba(13,148,136,0.3); color: var(--teal-light); }
+    .btn-call-teal:hover { background: rgba(13,148,136,0.28); border-color: rgba(13,148,136,0.55); transform: translateY(-1px); }
+    .btn-save-teal { background: rgba(4,38,63,0.6); border: 1px solid rgba(13,148,136,0.25); color: #7DD3CB; }
+    .btn-save-teal:hover { background: rgba(4,38,63,0.85); border-color: rgba(13,148,136,0.45); transform: translateY(-1px); }
+
+    .contact-na { font-size: 11px; color: rgba(253,250,244,0.25); font-style: italic; padding: 5px 0; }
+
+    /* ---- CATEGORY BADGES ---- */
+    .cat-badge {
+      display: inline-block; padding: 2px 8px; border-radius: 4px;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .cat-produce { background: rgba(61,107,90,0.18); color: #7EC9A8; border: 1px solid rgba(61,107,90,0.25); }
+    .cat-logistics { background: rgba(59,130,246,0.12); color: #93C5FD; border: 1px solid rgba(59,130,246,0.22); }
+
+    /* markets product badges */
+    .cat-seafood { background: rgba(4,38,63,0.6); color: #67E8F9; border: 1px solid rgba(6,182,212,0.25); }
+    .cat-coffee { background: rgba(120,53,15,0.3); color: #FCD34D; border: 1px solid rgba(180,83,9,0.3); }
+    .cat-agri { background: rgba(26,77,46,0.4); color: #86EFAC; border: 1px solid rgba(34,197,94,0.2); }
+    .cat-spices { background: rgba(88,28,135,0.25); color: #D8B4FE; border: 1px solid rgba(139,92,246,0.2); }
+    .cat-fiber { background: rgba(75,85,99,0.3); color: #D1D5DB; border: 1px solid rgba(107,114,128,0.3); }
+
+    /* ---- CERT PILLS ---- */
+    .cert-list { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+    .cert-pill {
+      padding: 2px 7px; border-radius: 20px;
+      font-size: 9.5px; font-weight: 600; letter-spacing: 0.06em;
+      background: rgba(13,148,136,0.08);
+      border: 1px solid rgba(13,148,136,0.15);
+      color: rgba(94,234,212,0.6);
+    }
+
+    /* ---- NO RESULTS ---- */
+    .no-results { display: none; text-align: center; padding: 40px 20px; color: var(--text-dim); }
+    .no-results svg { margin: 0 auto 12px; opacity: 0.3; }
+    .no-results p { font-size: 14px; }
+
+    /* ---- FOOTER ---- */
+    footer { position: relative; z-index: 10; text-align: center; padding: 0 20px 32px; }
+    .footer-inner {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 20px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: rgba(201,168,76,0.05);
+    }
+    .footer-inner svg { color: var(--gold); opacity: 0.6; width: 14px; height: 14px; }
+    footer p { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(201,168,76,0.5); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-scene"></div>
+<div class="bg-grain"></div>
+<div class="bg-line"></div>
+<div class="bg-line"></div>
+<div class="bg-line"></div>
+
+<main>
+
+  <!-- ========== SECTION 1: RUSSIA ========== -->
+  <div class="header">
+    <div class="header-badge badge-russia">
+      <span class="dot"></span>
+      Tanzania — Russia Trade Registry
+    </div>
+    <h1>Tanzanian Companies <span class="accent-gold">Exporting</span><br>to the world</h1>
+    <p class="header-sub">Official registry of registered exporters & logistics providers</p>
+    <div class="header-rule rule-gold">
+      <span></span>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="14" height="14">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5a17.92 17.92 0 01-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/>
+      </svg>
+      <span></span>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-chip"><div class="stat-num" id="statTotal">32</div><div class="stat-label">Total Registered</div></div>
+    <div class="stat-chip"><div class="stat-num" id="statProduce">21</div><div class="stat-label">Produce / Trade</div></div>
+    <div class="stat-chip"><div class="stat-num" id="statLogistics">11</div><div class="stat-label">Logistics</div></div>
+    <div class="stat-chip"><div class="stat-num" id="statShowing">32</div><div class="stat-label">Showing</div></div>
+  </div>
+
+  <div class="search-wrap">
+    <svg class="icon icon-gold" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+    </svg>
+    <input type="text" id="searchInputRussia" class="input-gold" placeholder="Search by name or product…">
+    <button class="search-clear clear-gold" id="clearBtnRussia" title="Clear search">&#x2715;</button>
+  </div>
+
+  <button class="toggle-btn btn-russia" id="toggleBtnRussia">
+    <span>Browse Company Directory</span>
+    <svg class="chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+    </svg>
+  </button>
+
+  <div class="list-container" id="listContainerRussia">
+    <div class="filter-tabs">
+      <button class="tab tab-gold active" data-filter="all">All</button>
+      <button class="tab tab-gold" data-filter="produce">Produce & Trade</button>
+      <button class="tab tab-gold" data-filter="logistics">Logistics</button>
+    </div>
+    <div class="companies-list" id="companiesListRussia"></div>
+    <div class="no-results" id="noResultsRussia">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" width="36" height="36">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <p>No companies found matching your search.</p>
+    </div>
+  </div>
+
+  <!-- ========== SECTION DIVIDER ========== -->
+  <div class="section-divider">
+    <div class="section-divider-inner">
+      <span class="section-divider-text">&#9670; Explore More Markets &#9670;</span>
+    </div>
+  </div>
+
+  <!-- ========== SECTION 2: OTHER MARKETS ========== -->
+  <div class="header">
+    <div class="header-badge badge-markets">
+      <span class="dot"></span>
+      Tanzania Global Trade Directory
+    </div>
+    <h1>Interested in <span class="accent-teal">Other</span><br>Markets?</h1>
+    <p class="header-sub">Browse certified exporters reaching markets across the globe</p>
+    <div class="header-rule rule-teal">
+      <span></span>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="14" height="14">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6.115 5.19l.319 1.913A6 6 0 008.11 10.36L9.75 12l-.387.775c-.217.433-.132.956.21 1.298l1.348 1.348c.21.21.329.497.329.795v1.089c0 .426.24.815.622 1.006l.153.076c.433.217.956.132 1.298-.21l.723-.723a8.7 8.7 0 002.288-4.042 1.087 1.087 0 00-.358-1.099l-1.33-1.108c-.251-.21-.582-.299-.905-.245l-1.17.195a1.125 1.125 0 01-.98-.314l-.295-.295a1.125 1.125 0 010-1.591l.13-.132a1.125 1.125 0 011.3-.21l.603.302a.809.809 0 001.086-1.086L14.25 7.5l1.256-.837a4.5 4.5 0 001.528-1.732l.146-.292M6.115 5.19A9 9 0 1017.18 4.64M6.115 5.19A8.965 8.965 0 0112 3c1.929 0 3.716.607 5.18 1.64"/>
+      </svg>
+      <span></span>
+    </div>
+  </div>
+
+  <div class="markets-intro">
+    <div class="markets-intro-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M20.893 13.393l-1.135-1.135a2.252 2.252 0 01-.421-.585l-1.08-2.16a.414.414 0 00-.663-.107.827.827 0 01-.812.21l-1.273-.363a.89.89 0 00-.738 1.595l.587.39c.59.395.674 1.23.172 1.732l-.2.2c-.212.212-.33.498-.33.796v.41c0 .409-.11.809-.32 1.158l-1.315 2.191a2.11 2.11 0 01-1.81 1.025 1.055 1.055 0 01-1.055-1.055v-1.172c0-.92-.56-1.747-1.414-2.089l-.655-.261a2.25 2.25 0 01-1.383-2.46l.007-.042a2.25 2.25 0 01.29-.787l.09-.15a2.25 2.25 0 012.37-1.048l1.178.236a1.125 1.125 0 001.302-.795l.208-.73a1.125 1.125 0 00-.578-1.315l-.665-.332-.091.091a2.25 2.25 0 01-1.591.659h-.18c-.249 0-.487.1-.662.274a.931.931 0 01-1.458-1.137l1.411-2.353a2.25 2.25 0 00.286-.76m11.928 9.869A9 9 0 008.965 3.525m11.928 9.868A9 9 0 118.965 3.525"/>
+      </svg>
+    </div>
+    <div class="markets-intro-body">
+      <h2>Discover Tanzania's Global Exporters</h2>
+      <p>These <strong>32 certified companies</strong> are actively trading with markets including the <strong>Middle East, Asia, EU, China, India, USA</strong> and more — all fully licensed and registered with valid export documentation.</p>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-chip teal-chip"><div class="stat-num teal" id="mStatTotal">32</div><div class="stat-label">Total Exporters</div></div>
+    <div class="stat-chip teal-chip"><div class="stat-num teal" id="mStatCert">32</div><div class="stat-label">Fully Certified</div></div>
+    <div class="stat-chip teal-chip"><div class="stat-num teal" id="mStatShowing">32</div><div class="stat-label">Showing</div></div>
+  </div>
+
+  <div class="search-wrap">
+    <svg class="icon icon-teal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+    </svg>
+    <input type="text" id="searchInputMarkets" class="input-teal" placeholder="Search by company, product or market…">
+    <button class="search-clear clear-teal" id="clearBtnMarkets" title="Clear search">&#x2715;</button>
+  </div>
+
+  <button class="toggle-btn btn-markets" id="toggleBtnMarkets">
+    <span>Browse Other Markets Directory</span>
+    <svg class="chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+    </svg>
+  </button>
+
+  <div class="list-container" id="listContainerMarkets">
+    <div class="filter-tabs">
+      <button class="tab tab-teal active" data-mfilter="all">All</button>
+      <button class="tab tab-teal" data-mfilter="agri">Agriculture</button>
+      <button class="tab tab-teal" data-mfilter="seafood">Seafood</button>
+      <button class="tab tab-teal" data-mfilter="coffee">Coffee</button>
+      <button class="tab tab-teal" data-mfilter="spices">Spices</button>
+    </div>
+    <div class="companies-list" id="companiesListMarkets"></div>
+    <div class="no-results" id="noResultsMarkets">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" width="36" height="36">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <p>No companies found matching your search.</p>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/>
+    </svg>
+    <p>Powered by TanTrade IT Services</p>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   DATA
+============================================================ */
+const russiaCompanies = [
+  { id:1, name:"Asilia African Honey", products:"Asali (Honey)", contacts:"0769660650", type:"produce" },
+  { id:2, name:"Kibondo Farm", products:"Avocado", contacts:"0753383840", type:"produce" },
+  { id:3, name:"Woiso Original Products", products:"Bidhaa za Ngozi (Leather Goods)", contacts:"0677389088", type:"produce" },
+  { id:4, name:"Bodi ya Korosho", products:"Korosho (Cashew Nuts)", contacts:"0757827181", type:"produce" },
+  { id:5, name:"Bodi ya Kahawa", products:"Kahawa (Coffee)", contacts:"N/A", type:"produce" },
+  { id:6, name:"Afritea", products:"Chai (Tea)", contacts:"N/A", type:"produce" },
+  { id:7, name:"Tanzania Spice Association", products:"Karafuu (Cloves)", contacts:"0754749382", type:"produce" },
+  { id:8, name:"Tvasc Group", products:"Korosho, Kahawa, Sesame, Turmeric, Maharage", contacts:"0757355611", type:"produce" },
+  { id:9, name:"Sila Group Company Limited", products:"Cashew nuts, Sesame seeds, Coffee, Cocoa, Green grams, Pigeon peas", contacts:"0763186439", type:"produce" },
+  { id:10, name:"Deen Investment Company", products:"Kahawa, Korosho, Halal Meat", contacts:"contacts@deenexport.com", type:"produce" },
+  { id:11, name:"Tradeland Commodities Ltd Group", products:"Coffee, Sesame, Black Pepper, Soya Beans, Sunflower Oil", contacts:"0786786257", type:"produce" },
+  { id:12, name:"TanzaMerchants Commodities Ltd", products:"Coffee, Raw Cashew Nuts, Sesame, Sunflower Seeds, Pulses", contacts:"0783214618", type:"produce" },
+  { id:13, name:"Pridecom Limited", products:"Cloves, Raw Cashew Nuts, Sesame, Sunflower Seeds, Pulses", contacts:"0783214618", type:"produce" },
+  { id:14, name:"Kamal Agro", products:"Green Coffee, Roasted Coffee, Cashew Nuts", contacts:"0750199001", type:"produce" },
+  { id:15, name:"Akros Limited", products:"Processed Cashew Nuts", contacts:"0759078861", type:"produce" },
+  { id:16, name:"Badara Export Company Ltd", products:"Coffee, Sesame, Cloves, Cardamom, Beans, Cashew Nuts", contacts:"0695366753", type:"produce" },
+  { id:17, name:"Savannah Grains Processing Ltd", products:"Sesame, Soybeans, Cashew Nuts, Spices, Pigeon Peas", contacts:"0783000937", type:"produce" },
+  { id:18, name:"Kambaulaya International Ltd", products:"Sesame, Groundnuts, Cashews, Pulses", contacts:"N/A", type:"produce" },
+  { id:19, name:"Jostero Investment Company", products:"Cashew Nuts, Coffee, Sesame, Minerals", contacts:"N/A", type:"produce" },
+  { id:20, name:"Tanko Group Limited", products:"Coffee, Honey, Sesame, Cloves, Sunflower Oil", contacts:"N/A", type:"produce" },
+  { id:21, name:"Kilimofy International Company Ltd", products:"Coffee, Sunflower Seeds, Raw Cashew Nuts, Spices", contacts:"N/A", type:"produce" },
+  { id:22, name:"Tanzania Shipping Agency", products:"Clearing & Forwarding", contacts:"0784585642", type:"logistics" },
+  { id:23, name:"A&M Clearing and Forwarding Serving Ltd", products:"Clearing & Forwarding", contacts:"0777415190", type:"logistics" },
+  { id:24, name:"DHL Tanzania Ltd", products:"Logistics", contacts:"0758828099", type:"logistics" },
+  { id:25, name:"Gari Yangu Company Ltd", products:"Logistics", contacts:"0712745438", type:"logistics" },
+  { id:26, name:"Uchan Investment Ltd", products:"Investment & Logistics", contacts:"0766313043", type:"logistics" },
+  { id:27, name:"Simba Clearing and Forwarding", products:"Clearing & Forwarding", contacts:"0684666924", type:"logistics" },
+  { id:28, name:"Winome (T) Ltd", products:"Logistics", contacts:"0764255963", type:"logistics" },
+  { id:29, name:"Revoest Company Ltd", products:"Logistics", contacts:"0653088481", type:"logistics" },
+  { id:30, name:"Netha Trade Company Limited", products:"Trade & Logistics", contacts:"0784904090", type:"logistics" },
+  { id:31, name:"Colvis Logistics Ltd", products:"Logistics", contacts:"0659188596", type:"logistics" },
+  { id:32, name:"Government Clearing and Forwarding Agent", products:"Clearing & Forwarding", contacts:"0688866882", type:"logistics" }
+];
+
+const otherMarkets = [
+  { id:1, name:"Afri Tea & Coffee Blenders (1963) Ltd", products:"Tea & Coffee", markets:"Middle East, Asia, Germany, America, China, Kenya, South Africa", contacts:"+255 22 213 1145,info@ttb.co.tz", type:"coffee", certs:"Business License, TIN, Export Licence, Cert. of Incorp." },
+  { id:2, name:"Tuzo Farm and Packaging Co. Ltd", products:"Cashew nuts, Beans, Avocado, Meat", markets:"Middle East, Asia, Oman, UK, China, Qatar, Turkey, Egypt, Yemen", contacts:"+255 755970970,jkashiha2008@gmail.com", type:"agri", certs:"Business License, TIN, Export Licence, Cert. of Incorp." },
+  { id:3, name:"Aibra Group Limited", products:"Honey", markets:"Asia, EU", contacts:"+255753896797,ceo@aibragroup.com", type:"agri", certs:"Business License, TIN, Export Licence, Cert. of Incorp." },
+  { id:4, name:"Akros Limited", products:"Cashew nuts, Sesame seeds", markets:"North America, China", contacts:"+255714060687,jonh@akros.co.tz", type:"agri", certs:"Business License, TIN, Export Licence, Cert. of Incorp." },
+  { id:5, name:"Alphakrust Company Ltd", products:"Lobster, Prawns, Octopus, Squid", markets:"International", contacts:"+255786368768,ganeshan.vedagiri@tz.alphaafrica.com", type:"seafood", certs:"Business License, TIN, Export Licence, Cert. of Incorp." },
+  { id:6, name:"Amir Hamza (T) Limited", products:"Green Coffee", markets:"International", contacts:"+255 754 220 999,amir@amimza.com", type:"coffee", certs:"Business License, TIN, TBS, VAT, Barcode, Cert. of Incorp." },
+  { id:7, name:"Ataladas Group Ltd", products:"Local Coffee (Roasted)", markets:"International", contacts:"+255752066308,atadalsgroupltd@gmail.com", type:"coffee", certs:"Business License, TIN, TBS, VAT, Barcode, Cert. of Incorp." },
+  { id:8, name:"TANIN GLOBAL LTD", products:"Coffee Robusta", markets:"Asia, EU", contacts:"+255765787777,daniel@tanin.co.tz", type:"coffee", certs:"Business License, TIN, TBS, VAT, Barcode, Cert. of Incorp." },
+  { id:9, name:"Karagwe Estate Ltd", products:"Coffee Robusta", markets:"Asia, EU", contacts:"+255753451891,directorathlet@gmail.com", type:"coffee", certs:"Business License, TIN, TBS, VAT, Barcode, Cert. of Incorp." },
+  { id:10, name:"AVIV Tanzania Ltd", products:"Coffee Arabica", markets:"Asia, EU", contacts:"+255755769465,aviv@olamnet.com", type:"coffee", certs:"Business License, TIN, TBS, VAT, Barcode, Cert. of Incorp." },
+  { id:11, name:"Burka Coffee Estates Ltd", products:"Green Coffee", markets:"Asia, EU", contacts:"+255754242440,eliaringa.macha@burkacoffee.com", type:"coffee", certs:"Business License, TIN, TBS, VAT, Barcode, Cert. of Incorp." },
+  { id:12, name:"Cafe Business Consult Ltd", products:"Roast and Ground Coffee", markets:"International", contacts:"+255786444599", type:"coffee", certs:"Business License, TIN, TBS, VAT, Cert. of Incorp." },
+  { id:13, name:"COSMIC Lines Ltd", products:"Avocado", markets:"Asia", contacts:"+255655160161,daata001@gmail.com", type:"agri", certs:"Business License, TIN, Export Licence, Cert. of Incorp." },
+  { id:14, name:"Dorman Tanzania Ltd", products:"Green Coffee", markets:"China", contacts:"+255784368260,masood.imamdin@dormanscoffee.com", type:"coffee", certs:"Business License, TIN, TBS, VAT, Barcode, Cert. of Incorp." },
+  { id:15, name:"Elven Agri Company Co. Limited", products:"Dried Fruits & Spices", markets:"EU", contacts:"+255684363543,info@elvenagri.com", type:"spices", certs:"Business License, TIN, TBS, VAT, Barcode, GlobalGAP, Social Compliance" },
+  { id:16, name:"Afrisian Ginning Ltd", products:"Cashew Nuts", markets:"India, Japan, Pakistan, China", contacts:"+255 715080508,rishi@afrisian.com", type:"agri", certs:"Business License, TIN, Export Licence, Cert. of Incorp." },
+  { id:17, name:"Avocado Society of Tanzania", products:"Avocado", markets:"India", contacts:"+255768328797,info@astatanzania.or.tz", type:"agri", certs:"Business License, TIN, Export Licence, Cert. of Incorp." },
+  { id:18, name:"Highlands Organic Company Ltd", products:"Avocado", markets:"India", contacts:"frank_msigwa@yahoo.com", type:"agri", certs:"Business License, TIN, Export Licence, Cert. of Incorp." },
+  { id:19, name:"Export Trading Co. Ltd", products:"Sesame Seeds", markets:"China, Japan, India", contacts:"+255 655281818,cosmas@elements.co.tz", type:"agri", certs:"Business License, TIN, Export Licence, Cert. of Incorp." },
+  { id:20, name:"Mizengo Pinda Farm Products", products:"Honey", markets:"International", contacts:"+255767500531", type:"agri", certs:"Business License, TIN, TBS, VAT, Cert. of Incorp." },
+  { id:21, name:"Mohammed Enterprises Tanzania Ltd (METL)", products:"Cashew nuts, Sisal, Wood, Cocoa, Pulse", markets:"Pakistan, Malaysia", contacts:"+255 754413200,info@metl.net", type:"agri", certs:"Business License, TIN, TBS, VAT, Barcode, Cert. of Incorp." },
+  { id:22, name:"Nature's Fish Ltd", products:"Nile Perch Fillets, Frozen Fish, Fish Maws", markets:"International", contacts:"+255784500327", type:"seafood", certs:"Business License, TIN, Export Licence, Cert. of Incorp." },
+  { id:23, name:"Nile Perch Fisheries Ltd", products:"Nile Perch Fillets, Frozen & Chilled Fillet", markets:"International", contacts:"+255282570329,info@nileperchfisheries.com", type:"seafood", certs:"Business License, TIN, Export Licence, Cert. of Incorp." },
+  { id:24, name:"Ottimale Limited", products:"Sisal & Coffee", markets:"International", contacts:"+255744444443,qassim.alalawi@ottimale.co.tz", type:"coffee", certs:"Business License, TIN, Export Licence, Cert. of Incorp." },
+  { id:25, name:"Sisalana (T) Co Ltd", products:"Sisal Spinning, Processing & Fiber Exports", markets:"International", contacts:"dmziray@sisalana.co.tz", type:"agri", certs:"Business License, TIN, Export Licence, Cert. of Incorp." },
+  { id:26, name:"Tan Perch Ltd", products:"Nile Perch Fillets", markets:"International", contacts:"+255282561337,tanperch@africaonline.co.tz", type:"seafood", certs:"Business License, TIN, Export Licence, Cert. of Incorp." },
+  { id:27, name:"Tanzania Fish Processors Ltd", products:"Lobster, Prawns, Nile Perch, Frozen Fish Maws, Chilled Fillets", markets:"International", contacts:"+255282550105,tfpl@alphatz.com", type:"seafood", certs:"Business License, TIN, Export Licence, Cert. of Incorp." },
+  { id:28, name:"Vicfish Mwanza Limited", products:"Lobster, Prawns, Octopus, Squid", markets:"International", contacts:"+255766388966", type:"seafood", certs:"Business License, TIN, Export Licence, Cert. of Incorp." },
+  { id:29, name:"Zanzibar State Trading Cooperation (ZSTC)", products:"Cloves, Essential Oil & Spices of Zanzibar", markets:"International", contacts:"+255242230271,info@zstcznz.org", type:"spices", certs:"Business License, TIN, Export Licence, Cert. of Incorp." },
+  { id:30, name:"Formal Agro Ltd", products:"Avocado", markets:"Viet Nam, India, UAE", contacts:"+255752972727,info@formalagro.com", type:"agri", certs:"Business License, TIN, Export Licence, Cert. of Incorp." },
+  { id:31, name:"Finagro Plantations Ltd", products:"Coffee Arabica", markets:"Asia, EU", contacts:"+255 746363977,info@edelweisscoffe.com", type:"coffee", certs:"Business License, TIN, Export Licence, Cert. of Incorp." },
+  { id:32, name:"AVOAFRICA TZ LIMITED", products:"Avocado", markets:"Asia, EU", contacts:"+255769909029,hradmin@avoafricatz.com", type:"agri", certs:"Business License, TIN, Export Licence, Cert. of Incorp." }
+];
+
+/* ============================================================
+   HELPERS
+============================================================ */
+const isEmail = v => v.includes('@');
+const isPhoneIntl = v => v.trim().startsWith('+');
+const isPhoneLocal = v => /^0\d{9}$/.test(v.replace(/\s/g,''));
+
+function formatPhoneLocal(p) { return '+255' + p.replace(/\s/g,'').slice(1); }
+
+function buildVCard(name, products, phone) {
+  return 'BEGIN:VCARD\nVERSION:3.0\nFN:' + name + '\nTEL;TYPE=WORK,VOICE:' + phone + '\nNOTE:Tanzania Exporter — ' + products + '\nEND:VCARD';
+}
+function saveContact(name, products, phone) {
+  const vcf = buildVCard(name, products, phone);
+  const blob = new Blob([vcf], { type: 'text/vcard' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name.replace(/\s+/g,'_') + '.vcf';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function buildContactButtons(contacts, style) {
+  if (!contacts || contacts === 'N/A') return '<span class="contact-na">No contact available</span>';
+  const callClass = style === 'teal' ? 'btn-call-teal' : 'btn-call';
+  const saveClass = style === 'teal' ? 'btn-save-teal' : 'btn-save';
+  let html = '';
+  contacts.split(',').map(x => x.trim()).forEach(function(val) {
+    if (isEmail(val)) {
+      html += '<a href="mailto:' + val + '" class="contact-action btn-email">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>' +
+        'Email</a>';
+    } else if (isPhoneLocal(val) || isPhoneIntl(val)) {
+      const intl = isPhoneLocal(val) ? formatPhoneLocal(val) : val.replace(/\s/g,'');
+      const safeN = val.replace(/'/g,"\\'");
+      html += '<a href="tel:' + intl + '" class="contact-action ' + callClass + '">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>' +
+        'Call</a>' +
+        '<button class="contact-action ' + saveClass + '" onclick="saveContact(\'' + safeN.replace(/\\/g,'\\\\') + '\',\'' + safeN.replace(/\\/g,'\\\\') + '\',\'' + intl + '\')">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z"/></svg>' +
+        'Save</button>';
+    }
+  });
+  return html || '<span class="contact-na">No contact available</span>';
+}
+
+/* ============================================================
+   RENDER: RUSSIA
+============================================================ */
+function renderRussia(data) {
+  const list = document.getElementById('companiesListRussia');
+  const noRes = document.getElementById('noResultsRussia');
+  document.getElementById('statShowing').textContent = data.length;
+  if (!data.length) { list.innerHTML=''; list.style.display='none'; noRes.style.display='block'; return; }
+  list.style.display='flex'; noRes.style.display='none';
+  list.innerHTML = data.map(function(c, i) {
+    const num = String(i+1).padStart(2,'0');
+    const bc = c.type === 'logistics' ? 'cat-logistics' : 'cat-produce';
+    const bl = c.type === 'logistics' ? 'Logistics' : 'Produce & Trade';
+    return '<div class="company-card card-russia" style="animation-delay:'+(i*0.035)+'s">' +
+      '<div class="card-num num-gold">'+num+'</div>' +
+      '<div class="card-divider divider-gold"></div>' +
+      '<div class="card-body">' +
+        '<span class="cat-badge '+bc+'">'+bl+'</span>' +
+        '<div class="card-name">'+c.name+'</div>' +
+        '<div class="card-products"><strong>Products:</strong> '+c.products+'</div>' +
+        '<div class="card-contact">'+buildContactButtons(c.contacts, 'gold')+'</div>' +
+      '</div></div>';
+  }).join('');
+}
+
+/* ============================================================
+   RENDER: OTHER MARKETS
+============================================================ */
+const typeMap = {
+  agri: { cls:'cat-agri', label:'Agriculture' },
+  seafood: { cls:'cat-seafood', label:'Seafood' },
+  coffee: { cls:'cat-coffee', label:'Coffee' },
+  spices: { cls:'cat-spices', label:'Spices' },
+  fiber: { cls:'cat-fiber', label:'Fiber' }
+};
+
+function renderMarkets(data) {
+  const list = document.getElementById('companiesListMarkets');
+  const noRes = document.getElementById('noResultsMarkets');
+  document.getElementById('mStatShowing').textContent = data.length;
+  if (!data.length) { list.innerHTML=''; list.style.display='none'; noRes.style.display='block'; return; }
+  list.style.display='flex'; noRes.style.display='none';
+  list.innerHTML = data.map(function(c, i) {
+    const num = String(i+1).padStart(2,'0');
+    const tm = typeMap[c.type] || { cls:'cat-agri', label:'Export' };
+    const certPills = c.certs ? c.certs.split(',').map(function(x){ return '<span class="cert-pill">'+x.trim()+'</span>'; }).join('') : '';
+    return '<div class="company-card card-markets" style="animation-delay:'+(i*0.035)+'s">' +
+      '<div class="card-num num-teal">'+num+'</div>' +
+      '<div class="card-divider divider-teal"></div>' +
+      '<div class="card-body">' +
+        '<span class="cat-badge '+tm.cls+'">'+tm.label+'</span>' +
+        '<div class="card-name">'+c.name+'</div>' +
+        '<div class="card-products"><strong>Products:</strong> '+c.products+'</div>' +
+        (c.markets ? '<div class="card-markets-row"><strong>&#127758; Markets:</strong> '+c.markets+'</div>' : '') +
+        (certPills ? '<div class="cert-list">'+certPills+'</div>' : '') +
+        '<div class="card-contact">'+buildContactButtons(c.contacts, 'teal')+'</div>' +
+      '</div></div>';
+  }).join('');
+}
+
+/* ============================================================
+   STATE & EVENTS: RUSSIA
+============================================================ */
+var rFilter = 'all', rSearch = '', rOpen = false;
+function rFiltered() {
+  return russiaCompanies.filter(function(c) {
+    return (rFilter==='all'||c.type===rFilter) &&
+      (!rSearch||c.name.toLowerCase().includes(rSearch)||c.products.toLowerCase().includes(rSearch));
+  });
+}
+function rRefresh() { renderRussia(rFiltered()); }
+
+document.getElementById('toggleBtnRussia').addEventListener('click', function() {
+  rOpen = !rOpen;
+  document.getElementById('listContainerRussia').classList.toggle('open', rOpen);
+  this.classList.toggle('open', rOpen);
+});
+document.getElementById('searchInputRussia').addEventListener('input', function(e) {
+  rSearch = e.target.value.toLowerCase();
+  document.getElementById('clearBtnRussia').classList.toggle('visible', rSearch.length>0);
+  if (rSearch && !rOpen) { rOpen=true; document.getElementById('listContainerRussia').classList.add('open'); document.getElementById('toggleBtnRussia').classList.add('open'); }
+  rRefresh();
+});
+document.getElementById('clearBtnRussia').addEventListener('click', function() {
+  document.getElementById('searchInputRussia').value=''; rSearch='';
+  this.classList.remove('visible'); document.getElementById('searchInputRussia').focus(); rRefresh();
+});
+document.querySelectorAll('[data-filter]').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('[data-filter]').forEach(function(t){t.classList.remove('active');});
+    tab.classList.add('active'); rFilter = tab.dataset.filter; rRefresh();
+  });
+});
+
+/* ============================================================
+   STATE & EVENTS: MARKETS
+============================================================ */
+var mFilter = 'all', mSearch = '', mOpen = false;
+function mFiltered() {
+  return otherMarkets.filter(function(c) {
+    return (mFilter==='all'||c.type===mFilter) &&
+      (!mSearch||c.name.toLowerCase().includes(mSearch)||c.products.toLowerCase().includes(mSearch)||
+       (c.markets&&c.markets.toLowerCase().includes(mSearch)));
+  });
+}
+function mRefresh() { renderMarkets(mFiltered()); }
+
+document.getElementById('toggleBtnMarkets').addEventListener('click', function() {
+  mOpen = !mOpen;
+  document.getElementById('listContainerMarkets').classList.toggle('open', mOpen);
+  this.classList.toggle('open', mOpen);
+});
+document.getElementById('searchInputMarkets').addEventListener('input', function(e) {
+  mSearch = e.target.value.toLowerCase();
+  document.getElementById('clearBtnMarkets').classList.toggle('visible', mSearch.length>0);
+  if (mSearch && !mOpen) { mOpen=true; document.getElementById('listContainerMarkets').classList.add('open'); document.getElementById('toggleBtnMarkets').classList.add('open'); }
+  mRefresh();
+});
+document.getElementById('clearBtnMarkets').addEventListener('click', function() {
+  document.getElementById('searchInputMarkets').value=''; mSearch='';
+  this.classList.remove('visible'); document.getElementById('searchInputMarkets').focus(); mRefresh();
+});
+document.querySelectorAll('[data-mfilter]').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('[data-mfilter]').forEach(function(t){t.classList.remove('active');});
+    tab.classList.add('active'); mFilter = tab.dataset.mfilter; mRefresh();
+  });
+});
+
+/* ============================================================
+   INIT
+============================================================ */
+rRefresh();
+mRefresh();
+</script>
+</body>
+</html>
